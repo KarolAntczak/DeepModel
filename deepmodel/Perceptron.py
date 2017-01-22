@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from deepmodel import get_next_batch
+
 
 class Perceptron:
     """ Single layer perceptron network with sigmoidal activation.
@@ -18,44 +20,19 @@ class Perceptron:
 
         tf.variables_initializer([self.h1, self.b1]).run()
 
-    def encode(self, x):
-        """Encodes given input.
-
-        Args:
-            x: Input vector to encode.
-
-        Returns:
-            Encoded vector.
-        """
-        return tf.nn.sigmoid(tf.add(tf.matmul(x, self.h1), self.b1))
-
-    def decode(self, y):
-        """Decodes given encoded vector.
-
-        Args:
-            y: Vector to decode.
-
-        Returns:
-            Decoded vector.
-        """
-        return y
+    def weights_norm(self):
+        return tf.reduce_mean(tf.square(self.h1)) + tf.reduce_mean(tf.square(self.b1))
 
     def recover(self, x):
-        """Encodes and then decodes given input vector
+        """Processes given input vector
 
         Args:
-            x: Input vector to recover.
+            x: Input vector to process.
 
         Returns:
-            Recovered vector, i.e. encoded and decoded.
+            Processed vector
         """
-        encoded = self.encode(x)
-        return self.decode(encoded)
-
-    @staticmethod
-    def get_next_batch(train_dataset, step, batch_size):
-        offset = 0 if batch_size == 1 else (step * batch_size) % (len(train_dataset) - batch_size)
-        return train_dataset[offset:offset + batch_size]
+        return tf.nn.sigmoid(tf.add(tf.matmul(x, self.h1), self.b1))
 
     def train(self, train_dataset, train_labels, steps=1000, batch_size=128, learning_rate=0.05, momentum=0.99, l2=40):
         """Train model.
@@ -79,7 +56,7 @@ class Perceptron:
 
         loss = tf.reduce_mean(tf.square(tf.sub(tf_train_labels, recovered)))
 
-        weights_penalty = l2 * (tf.reduce_mean(tf.square(self.h1)) + tf.reduce_mean(tf.square(self.b1)))
+        weights_penalty = l2 * self.weights_norm()
         optimizer = tf.train.MomentumOptimizer(learning_rate, momentum).minimize(loss + weights_penalty)
 
         momentum_initializer = [var for var in tf.global_variables() if 'Momentum' in var.name]
@@ -87,8 +64,8 @@ class Perceptron:
         tf.variables_initializer(momentum_initializer).run()
 
         for step in range(steps):
-            batch_data = self.get_next_batch(train_dataset, step, batch_size)
-            batch_labels = self.get_next_batch(train_labels, step, batch_size)
+            batch_data = get_next_batch(train_dataset, step, batch_size)
+            batch_labels = get_next_batch(train_labels, step, batch_size)
             _, l = tf.get_default_session().run((optimizer, loss), feed_dict={tf_train_dataset: batch_data,
                                                                               tf_train_labels: batch_labels})
             yield l
