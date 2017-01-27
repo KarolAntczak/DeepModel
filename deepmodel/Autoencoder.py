@@ -22,6 +22,10 @@ class Autoencoder(Perceptron):
 
         tf.variables_initializer([self.h2, self.b2]).run()
 
+    def weights_norm(self):
+        return tf.reduce_mean(tf.square(self.h1)) + tf.reduce_mean(tf.square(self.b1)) +\
+               tf.reduce_mean(tf.square(self.h2)) + tf.reduce_mean(tf.square(self.b2))
+
     def encode(self, x):
         """Encodes given input.
 
