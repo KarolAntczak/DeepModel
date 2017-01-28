@@ -2,8 +2,8 @@ import numpy as np
 
 
 def get_next_batch(train_dataset, step, batch_size):
-    offset = 0 if batch_size == 1 else (step * batch_size) % (len(train_dataset) - batch_size)
-    return train_dataset[offset:offset + batch_size]
+    offset = (step * batch_size) % (train_dataset.shape[0] - batch_size)
+    return train_dataset[offset:(offset + batch_size), :]
 
 
 def get_next_batch_noised(train_dataset, step, batch_size, noise_ratio=0.5):
