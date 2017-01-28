@@ -13,9 +13,9 @@ class Autoencoder:
             hidden_size: Number of neurons in hidden layer.
         """
 
-        self.h1 = tf.Variable(tf.random_normal([input_size, hidden_size]))
+        self.h1 = tf.Variable(tf.truncated_normal([input_size, hidden_size]))
         self.b1 = tf.Variable(tf.zeros([hidden_size]))
-        self.h2 = tf.Variable(tf.random_normal([hidden_size, input_size]))
+        self.h2 = tf.Variable(tf.truncated_normal([hidden_size, input_size]))
         self.b2 = tf.Variable(tf.zeros([input_size]))
 
     def __str__(self):
