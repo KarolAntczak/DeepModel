@@ -1,10 +1,9 @@
-import tensorflow as tf
-from deepmodel.trainers.Batch import *
+from deepmodel.trainers import *
 
 
 class MomentumTrainer:
 
-    def __init__(self, model, train_dataset, train_labels, batch_size=128, learning_rate=0.04, momentum=0.99,
+    def __init__(self, model, train_dataset, train_labels, learning_rate, momentum, batch_size=128,
                  weight_penalty=0):
         """Inits trainer.
 
@@ -20,7 +19,8 @@ class MomentumTrainer:
         self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, train_dataset.shape[1]))
         self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, train_labels.shape[1]))
         tr_train_predicted = model.predict(self.tf_train_dataset)
-        weight_loss = weight_penalty*self.l2_norm(model.weights)
+        weight_loss = weight_penalty*l2_norm(model.weights)
+
         self.loss = tf.reduce_mean(tf.square(tf.sub(self.tf_train_labels, tr_train_predicted))) + weight_loss
 
         self.optimizer = tf.train.MomentumOptimizer(learning_rate, momentum).minimize(self.loss)
@@ -48,10 +48,3 @@ class MomentumTrainer:
                                                                               self.tf_train_dataset: batch_data,
                                                                               self.tf_train_labels: batch_labels})
             yield l
-
-    @staticmethod
-    def l2_norm(weights):
-        weights_flat = []
-        for weight in weights:
-            weights_flat = tf.concat_v2([weights_flat, tf.reshape(weight, [-1])], axis=0)
-        return tf.reduce_mean(tf.square(weights_flat))

@@ -1,10 +1,9 @@
-import tensorflow as tf
-from deepmodel.trainers.Batch import *
+from deepmodel.trainers import *
 
 
 class AdamTrainer:
 
-    def __init__(self, model, train_dataset, train_labels, batch_size=128):
+    def __init__(self, model, train_dataset, train_labels, batch_size=128, weight_penalty=0):
         """Inits trainer.
 
         Args:
@@ -18,8 +17,8 @@ class AdamTrainer:
         self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, train_dataset.shape[1]))
         self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, train_labels.shape[1]))
         tr_train_predicted = model.predict(self.tf_train_dataset)
-        self.loss = tf.reduce_mean(tf.square(tf.sub(self.tf_train_labels, tr_train_predicted)))
-
+        weight_loss = weight_penalty * l2_norm(model.weights)
+        self.loss = tf.reduce_mean(tf.square(tf.sub(self.tf_train_labels, tr_train_predicted))) + weight_loss
         self.optimizer = tf.train.AdamOptimizer().minimize(self.loss)
         self.model = model
         self.batch_size = batch_size
