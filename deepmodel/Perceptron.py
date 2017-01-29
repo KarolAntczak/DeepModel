@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 class Perceptron:
-    """ Single layer perceptron network with sigmoidal activation.
+    """ Single layer perceptron network
     """
 
     def __init__(self, input_size, output_size):
@@ -32,4 +32,4 @@ class Perceptron:
         Returns:
             Processed vector
         """
-        return tf.nn.sigmoid(tf.matmul(x, self.h1) + self.b1)
+        return tf.matmul(x, self.h1) + self.b1

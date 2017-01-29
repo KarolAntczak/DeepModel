@@ -14,7 +14,9 @@ class AdamTrainer:
         """
         self.train_dataset = train_dataset
         self.train_labels = train_labels
-        self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, train_dataset.shape[1]))
+        batch_shape = list(train_dataset.shape)
+        batch_shape[0] = batch_size
+        self.tf_train_dataset = tf.placeholder(tf.float32, shape=tuple(batch_shape))
         self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, train_labels.shape[1]))
         tr_train_predicted = model.predict(self.tf_train_dataset)
         weight_loss = weight_penalty * l2_norm(model.weights)
