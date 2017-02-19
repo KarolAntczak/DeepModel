@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 class Autoencoder:
-    """ Shallow autoencoding network with sigmoidal encoder and decoder.
+    """ Shallow autoencoding network with encoder and decoder.
     """
 
     def __init__(self, input_size, hidden_size):
@@ -35,7 +35,7 @@ class Autoencoder:
         Returns:
             Encoded vector.
         """
-        return tf.nn.sigmoid(tf.matmul(x, self.h1) + self.b1)
+        return tf.matmul(x, self.h1) + self.b1
 
     def predict(self, x):
         """Encodes and then decodes given input vector

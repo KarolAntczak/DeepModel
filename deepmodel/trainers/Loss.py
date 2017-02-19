@@ -6,6 +6,10 @@ def accuracy(predictions, labels):
     return 100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1)) / predictions.shape[0]
 
 
+def mean_square_error(output, ideal):
+    return tf.reduce_mean(tf.square(tf.sub(output, ideal)))
+
+
 def l2_norm(weights):
     weights_flat = []
     for weight in weights:
